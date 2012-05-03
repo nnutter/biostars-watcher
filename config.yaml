@@ -1,4 +1,5 @@
 username: 'johndoe'
 password: 'bestshow'
-jira_server_base_url: 'https://jira.com'
-jql_query: 'labels = Foo'
+jira_server_base_url: 'https://jira.domain.com'
+jql_query: 'labels = BioStars'
+biostars_feed_url: 'http://www.biostars.org/feeds/latest/'

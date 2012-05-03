@@ -17,9 +17,14 @@ def parse_args():
     return args
 
 
-def list_issues(config_file_path):
+def load_config(config_file_path):
     config_file = file(config_file_path)
     config = yaml.load(config_file)
+    return config
+
+
+def list_issues(config_file_path):
+    config = load_config(config_file_path)
     options = {
         'server': config['jira_server_base_url'],
         'basic_auth': {
@@ -39,8 +44,10 @@ def find_post_id_from_url(url):
     return post_id
 
 
-def list_posts():
-    d = feedparser.parse('http://www.biostars.org/feeds/tag/tigra+breakdancer')
+def list_posts(config_file_path):
+    config = load_config(config_file_path)
+    biostars_feed_url = config['biostars_feed_url']
+    d = feedparser.parse(biostars_feed_url)
     for entry in d.entries:
         url = urlparse(entry.guid)
         post_id = find_post_id_from_url(url)
@@ -50,4 +57,4 @@ def list_posts():
 if __name__ == '__main__':
     args = parse_args()
     list_issues(args.c)
-    list_posts()
+    list_posts(args.c)
