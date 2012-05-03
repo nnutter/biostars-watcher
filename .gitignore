@@ -28,3 +28,6 @@ pip-log.txt
 
 # Local Config
 gsc.yaml
+
+# Vim
+*.swp
