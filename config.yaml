@@ -1,5 +1,8 @@
-username: 'johndoe'
-password: 'bestshow'
-jira_server_base_url: 'https://jira.domain.com'
-jql_query: 'labels = BioStars'
-biostars_feed_url: 'http://www.biostars.org/feeds/latest/'
+biostars:
+    feed_url: 'http://www.biostars.org/feeds/latest/'
+jira:
+    username: 'johndoe'
+    password: 'bestshow'
+    base_url: 'https://jira.domain.com'
+    project_key: 'FOO'
+    issue_type_id: '42'
