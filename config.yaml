@@ -1,0 +1,4 @@
+username: 'johndoe'
+password: 'bestshow'
+jira_server_base_url: 'https://jira.com'
+jql_query: 'labels = Foo'
