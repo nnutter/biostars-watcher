@@ -7,6 +7,7 @@ import json
 from urlparse import urlparse
 from jira.client import JIRA
 from requests.auth import HTTPBasicAuth
+from flask import Flask, render_template, jsonify
 
 
 def parse_args():
@@ -35,7 +36,7 @@ def jira_issue_exists(jira, entry):
         return False
 
 
-def connect_jira(config):
+def connect_jira():
     options = {
         'server': config['jira']['base_url'],
         'basic_auth': {
@@ -56,7 +57,7 @@ def find_post_id_from_url(url):
     return post_id
 
 
-def issue_creation_data(config, entry):
+def issue_creation_data(entry):
     url = urlparse(entry.guid)
     post_id = find_post_id_from_url(url)
     fields = {
@@ -66,7 +67,7 @@ def issue_creation_data(config, entry):
                 post_id,
             ],
             'summary': entry.title,
-            'description': entry.description,
+            'description': "[Go to BioStars|http://biostars.org/post/show/{}/]".format(post_id),
             'project': {
                 'key': config['jira']['project_key']
             },
@@ -78,23 +79,68 @@ def issue_creation_data(config, entry):
     return json.dumps(fields)
 
 
-def create_issue(jira, entry, config):
-    payload = issue_creation_data(config, entry)
+def create_issue(jira, entry):
+    payload = issue_creation_data(entry)
     rest_url = config['jira']['base_url'] + '/rest/api/2/issue'
     r = jira._session.post(rest_url, data=payload)
-    print r.text
+    data = json.loads(r.text)
+    return jira.issue(data['key'])
 
 
-def check_posts(config):
-    jira = connect_jira(config)
+def get_new_posts():
+    jira = connect_jira()
     biostars_feed_url = config['biostars']['feed_url']
     d = feedparser.parse(biostars_feed_url)
+    new_issues = []
     for entry in d.entries:
         if not jira_issue_exists(jira, entry):
-            create_issue(jira, entry, config)
+            issue = create_issue(jira, entry)
+            new_issues.append(issue)
+    return new_issues
+
+
+DEBUG = True
+app = Flask(__name__)
+app.config.from_object(__name__)
+
+
+@app.route("/get_new_questions")
+def get_new_questions():
+    questions = []
+    for issue in get_new_posts():
+        questions.append(dict(
+            summary=issue.fields.summary,
+            url='http://biostars.org/post/show/{}/'.format(issue.key),
+            jira_key=issue.key,
+            jira_url='{}/browse/{}'.format(config['jira']['base_url'], issue.key),
+        ))
+    return jsonify(questions=questions)
+
+
+@app.route("/get_questions")
+def get_questions():
+    jira = connect_jira()
+    questions = []
+    for issue in jira.search_issues('labels = BioStars AND status != Closed AND status != Resolved'):
+        for label in issue.fields.labels:
+            if not label == 'BioStars':
+                biostar_key = label
+        questions.append(dict(
+            summary=issue.fields.summary,
+            url='http://biostars.org/post/show/{}/'.format(biostar_key),
+            jira_key=issue.key,
+            jira_url='{}/browse/{}'.format(config['jira']['base_url'], issue.key),
+        ))
+    return jsonify(questions=questions)
+
+
+@app.route("/")
+def hello():
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
     args = parse_args()
+    global config
     config = load_config(args.c)
-    check_posts(config)
+    app.run()
