@@ -1,8 +1,14 @@
 biostars:
     feed_url: 'http://www.biostars.org/feeds/latest/'
+    key_terms:
+        - 'foo'
+        - 'bar'
 jira:
     username: 'johndoe'
     password: 'bestshow'
     base_url: 'https://jira.domain.com'
     project_key: 'FOO'
     issue_type_id: '42'
+graphite:
+    host: 'localhost'
+    port: 2004
