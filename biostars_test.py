@@ -13,11 +13,11 @@ class TestQuestionFunctions(unittest.TestCase):
         )
 
     def test_post_id(self):
-        self.assertEqual(self.question.post_id(), '99999')
+        self.assertEqual(self.question.post_id, '99999')
 
     # This is a silly test.
     def test_url(self):
-        self.assertIsInstance(self.question.url(), urlparse.ParseResult)
+        self.assertIsInstance(self.question.url, urlparse.ParseResult)
 
 
 if __name__ == '__main__':

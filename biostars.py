@@ -1,57 +1,35 @@
-import json
 from urlparse import urlparse
+import re
 
 
 class Question:
 
-    def __init__(self, title, urlstring, content):
+    def __init__(self, title, urlstring=None, post_id=None, content=None):
         self.title = title
-        self.urlstring = urlstring
         self.content = content
-
-    def url(self):
-        return urlparse(self.urlstring)
-
-    def post_id(self):
-        return self.url().path.split('/')[3]
-
-
-class QuestionIssueMapper:
-
-    def __init__(self, question, jira):
-        self.question = question
-        self.jira = jira
-
-    def issue(self):
-        jql_str = 'labels = BioStars AND labels = {}'.format(self.question.post_id())
-        issues = self.jira.search_issues(jql_str=jql_str)
-        if len(issues) > 1:
-            raise Exception('Multiple Issues found for Question.')
-        elif len(issues) == 0:
-            raise Exception('No Issue found for Question.')
+        if urlstring == None and post_id == None:
+            raise Exception('Question requires a post_id or a urlstring')
+        if post_id != None:
+            self.init_with_post_id(post_id)
+            if self.post_id != post_id:
+                raise Exception('provided post_id does not match urlstring')
         else:
-            return issues[0]
+            self.init_with_urlstring(urlstring)
 
-    def create_issue(self):
-        # TODO get config?
-        config = {}
-        fields = {
-            'fields': {
-                'labels': [
-                    'BioStars',
-                    self.question.post_id(),
-                ],
-                'summary': self.question.title,
-                'description': "[Go to BioStars|{}]".format(self.question.urlstring),
-                'project': {
-                    'key': config['jira']['project_key']
-                },
-                "issuetype": {
-                    "id": config['jira']['issue_type_id']
-                },
-            },
-        }
-        payload = json.dumps(fields)
-        rest_url = config['jira']['base_url'] + '/rest/api/2/issue'
-        self.jira._session.post(rest_url, data=payload)
-        return self.issue()
+    def init_with_post_id(self, post_id):
+        urlstring = 'http://www.biostars.org/post/show/{}/'.format(post_id)
+        self.init_with_urlstring(urlstring)
+
+    def init_with_urlstring(self, urlstring):
+        self.url = urlparse(urlstring)
+        self.post_id = self.url.path.split('/')[3]
+        if not re.match('^\d+$', self.post_id):
+            raise Exception('post_id is not a number')
+        if isinstance(self.post_id, unicode):
+            self.post_id = str(self.post_id)
+
+    def matches(self, pattern):
+        for string in (self.title, self.content):
+            if re.match(pattern, string, re.IGNORECASE):
+                return True
+        return False
