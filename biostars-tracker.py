@@ -137,7 +137,7 @@ class QuestionIssueMap:
                     'BioStars-{}'.format(self.question.post_id),
                 ],
                 'summary': self.question.title,
-                'description': "[Go to BioStars|{}]".format(self.question.urlstring),
+                'description': "Go to BioStars ({}).".format(self.question.urlstring),
                 'project': {
                     'key': self.config['jira']['project_key']
                 },
