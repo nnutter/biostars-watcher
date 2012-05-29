@@ -21,7 +21,7 @@ class Question:
             raise Exception('provided post_id is not consistent with urlstring')
 
         if not re.match('^\d+$', self.post_id):
-            raise Exception('post_id is not a number')
+            raise Exception('post_id({}) is not a number'.format(self.post_id))
 
         if isinstance(self.post_id, unicode):
             self.post_id = str(self.post_id)
