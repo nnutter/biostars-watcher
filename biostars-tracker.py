@@ -102,6 +102,8 @@ class BioStarsTracker:
                 logging.info('POST_ID = {}, KEY = {}'.format(post_id, issue.key))
             else:
                 logging.info('POST_ID = {}, KEY = MISSING'.format(post_id))
+                qi_map = QuestionIssueMap(question=self.questions[post_id], jira=self.jira, config=self.config)
+                qi_map.create_issue()
 
     def main(self):
         self.load_known_questions()
