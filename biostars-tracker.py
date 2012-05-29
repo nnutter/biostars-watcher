@@ -113,9 +113,10 @@ class BioStarsTracker:
 
 class QuestionIssueMap:
 
-    def __init__(self, question=None, jira=None):
+    def __init__(self, question=None, jira=None, config=None):
         self.question = question
         self.jira = jira
+        self.config = config
 
     def issue(self):
         jql_str = 'project = "BST" AND labels = BioStars-{}'.format(self.question.post_id)
