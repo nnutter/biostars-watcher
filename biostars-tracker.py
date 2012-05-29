@@ -5,7 +5,6 @@ from requests.auth import HTTPBasicAuth
 import argparse
 import biostars
 import feedparser
-import json
 import logging
 import re
 import time
@@ -102,8 +101,19 @@ class BioStarsTracker:
                 logging.info('POST_ID = {}, KEY = {}'.format(post_id, issue.key))
             else:
                 logging.info('POST_ID = {}, KEY = MISSING'.format(post_id))
-                qi_map = QuestionIssueMap(question=self.questions[post_id], jira=self.jira, config=self.config)
-                qi_map.create_issue()
+                self.jira.create_issue(
+                    labels=[
+                        'BioStars-{}'.format(self.question.post_id),
+                    ],
+                    summary=self.question.title,
+                    description="Go to BioStars ({}).".format(self.question.urlstring),
+                    project={
+                        'key': self.config['jira']['project_key']
+                    },
+                    issuetype={
+                        "id": self.config['jira']['issue_type_id']
+                    },
+                )
 
     def main(self):
         self.load_known_questions()
@@ -111,45 +121,6 @@ class BioStarsTracker:
             if self.load_new_questions():
                 self.map_issues()
             time.sleep(5)
-
-
-class QuestionIssueMap:
-
-    def __init__(self, question=None, jira=None, config=None):
-        self.question = question
-        self.jira = jira
-        self.config = config
-
-    def issue(self):
-        jql_str = 'project = "BST" AND labels = BioStars-{}'.format(self.question.post_id)
-        issues = self.jira.search_issues(jql_str=jql_str)
-        if len(issues) > 1:
-            raise Exception('Multiple Issues found for Question.')
-        elif len(issues) == 0:
-            raise Exception('No Issue found for Question.')
-        else:
-            return issues[0]
-
-    def create_issue(self):
-        fields = {
-            'fields': {
-                'labels': [
-                    'BioStars-{}'.format(self.question.post_id),
-                ],
-                'summary': self.question.title,
-                'description': "Go to BioStars ({}).".format(self.question.urlstring),
-                'project': {
-                    'key': self.config['jira']['project_key']
-                },
-                "issuetype": {
-                    "id": self.config['jira']['issue_type_id']
-                },
-            },
-        }
-        payload = json.dumps(fields)
-        rest_url = self.config['jira']['base_url'] + '/rest/api/2/issue'
-        self.jira._session.post(rest_url, data=payload)
-        return self.issue()
 
 
 def parse_args():
