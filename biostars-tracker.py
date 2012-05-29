@@ -44,7 +44,7 @@ class BioStarsTracker:
         self.questions[question.post_id] = question
 
     def load_known_questions(self):
-        jql_str = 'labels = BioStars'
+        jql_str = 'project = "BST"'
         issues = self.jira.search_issues(jql_str=jql_str)
         for issue in issues:
             for label in issue.fields.labels:
@@ -86,7 +86,7 @@ class BioStarsTracker:
         return True
 
     def issue_for_post_id(self, post_id):
-        jql_str = 'labels = BioStars AND labels = {}'.format(post_id)
+        jql_str = 'project = "BST" AND labels = BioStars-{}'.format(post_id)
         issues = self.jira.search_issues(jql_str=jql_str)
         if len(issues) > 1:
             raise Exception('multiple issues found')
@@ -118,7 +118,7 @@ class QuestionIssueMap:
         self.jira = jira
 
     def issue(self):
-        jql_str = 'labels = BioStars AND labels = BioStars-{}'.format(self.question.post_id())
+        jql_str = 'project = "BST" AND labels = BioStars-{}'.format(self.question.post_id)
         issues = self.jira.search_issues(jql_str=jql_str)
         if len(issues) > 1:
             raise Exception('Multiple Issues found for Question.')
@@ -131,7 +131,6 @@ class QuestionIssueMap:
         fields = {
             'fields': {
                 'labels': [
-                    'BioStars',
                     'BioStars-{}'.format(self.question.post_id),
                 ],
                 'summary': self.question.title,
