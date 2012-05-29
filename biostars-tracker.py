@@ -52,7 +52,7 @@ class BioStarsTracker:
                 if r != None:
                     question = biostars.Question(
                         title=issue.fields.summary,
-                        post_id=r.group(0),
+                        post_id=r.group(1),
                     )
                     if not self.question_is_loaded(question):
                         self.load_question(question)
