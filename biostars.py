@@ -12,9 +12,11 @@ class Question:
             raise Exception('Question requires a post_id or a urlstring.')
 
         if urlstring != None:
+            self.urlstring = urlstring
             self.url = urlparse(urlstring)
         elif post_id != None:
-            self.url = urlparse('http://www.biostars.org/post/show/{}/'.format(post_id))
+            self.urlstring = 'http://www.biostars.org/post/show/{}/'.format(post_id)
+            self.url = urlparse(self.urlstring)
 
         self.post_id = self.url.path.split('/')[3]
         if post_id != None and self.post_id != post_id:
