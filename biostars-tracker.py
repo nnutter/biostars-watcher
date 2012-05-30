@@ -28,8 +28,9 @@ class BioStarsTracker:
                 'password': self.config['jira']['password'],
             },
         }
-        verify = False
-        if (self.config['jira']['verify'] == 'True'):
+        if (not self.config['jira'].get('verify')):
+            verify = False
+        elif (self.config['jira']['verify'] == 'True'):
             verify = True
         elif (self.config['jira']['verify']):
             verify = self.config['jira']['verify']
