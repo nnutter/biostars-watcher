@@ -139,7 +139,7 @@ if __name__ == '__main__':
     tracker = BioStarsTracker(config_path=args.config)
     if args.debug:
         logging.basicConfig(
-            format='%(levelname)s: %(message)s',
+            format='%(asctime)-15s %(levelname)s: %(message)s',
             level=logging.DEBUG,
         )
         logging.debug('Debug logging enabled')
