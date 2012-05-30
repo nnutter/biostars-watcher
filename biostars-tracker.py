@@ -120,7 +120,7 @@ class BioStarsTracker:
         while True:
             if self.load_new_questions():
                 self.map_issues()
-            time.sleep(5)
+            time.sleep(900)
 
 
 def parse_args():
