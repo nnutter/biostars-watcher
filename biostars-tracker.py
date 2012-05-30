@@ -28,16 +28,10 @@ class BioStarsTracker:
                 'password': self.config['jira']['password'],
             },
         }
-        if (not self.config['jira'].get('verify')):
-            verify = False
-        elif (self.config['jira']['verify'] == 'True'):
-            verify = True
-        elif (self.config['jira']['verify']):
-            verify = self.config['jira']['verify']
         jira = JIRA(options)
         auth_url = self.config['jira']['base_url'] + '/rest/auth/1/session'
         auth_data = HTTPBasicAuth(self.config['jira']['username'], self.config['jira']['password'])
-        jira._session.get(auth_url, auth=auth_data, verify=verify)
+        jira._session.get(auth_url, auth=auth_data)
         self.jira = jira
 
     def question_is_loaded(self, question):
