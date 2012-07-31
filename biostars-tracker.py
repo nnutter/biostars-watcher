@@ -103,10 +103,10 @@ class BioStarsTracker:
                 logging.info('POST_ID = {}, KEY = MISSING'.format(post_id))
                 self.jira.create_issue(
                     labels=[
-                        'BioStars-{}'.format(self.question.post_id),
+                        'BioStars-{}'.format(post_id),
                     ],
-                    summary=self.question.title,
-                    description="Go to BioStars ({}).".format(self.question.urlstring),
+                    summary=self.questions[post_id].title,
+                    description="Go to BioStars ({}).".format(self.questions[post_id].urlstring),
                     project={
                         'key': self.config['jira']['project_key']
                     },
