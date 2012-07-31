@@ -111,7 +111,7 @@ class BioStarsTracker:
                         'key': self.config['jira']['project_key']
                     },
                     issuetype={
-                        "id": self.config['jira']['issue_type_id']
+                        "name": self.config['jira']['issue_type_name']
                     },
                 )
 

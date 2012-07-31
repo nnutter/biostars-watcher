@@ -8,7 +8,7 @@ jira:
     password: 'bestshow'
     base_url: 'https://jira.domain.com'
     project_key: 'FOO'
-    issue_type_id: '42'
+    issue_type_name: 'Bug'
 graphite:
     host: 'localhost'
     port: 2004
